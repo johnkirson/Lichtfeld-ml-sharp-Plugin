@@ -154,6 +154,11 @@ def predict_cli(
             metadata = SceneMetaData(intrinsics[0, 0].item(), (width, height), "linearRGB")
             render_gaussians(gaussians, metadata, output_video_path)
 
+    # Cleanup model to free memory
+    del gaussian_predictor
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
 
 @torch.no_grad()
 def predict_image(

@@ -103,7 +103,7 @@ class SharpVideoPanel:
     panel_order = 5
 
     def __init__(self):
-        self.input_path = str(Path.home() / "Videos")
+        self.input_path = ""
         self.input_mode_video = True # True = Video, False = PLY Directory
         
         self.job = None
@@ -117,6 +117,7 @@ class SharpVideoPanel:
         self.cache_limit = 150 
         
         self.stage = Stage.IDLE
+        self.error_message = ""
 
     def draw(self, layout):
         layout.heading("Sharp 4D Video")
@@ -136,12 +137,12 @@ class SharpVideoPanel:
             # layout.checkbox returns (changed, value)
             _, self.input_mode_video = layout.checkbox("Input is Video File", self.input_mode_video)
             
-            label = "Video Path" if self.input_mode_video else "PLY Directory"
-            dialog_label = "Select Video" if self.input_mode_video else "Select Directory"
-            
-            # path_input returns (changed, value)
-            # folder_mode = not self.input_mode_video
-            _, self.input_path = layout.path_input(label, self.input_path, not self.input_mode_video, dialog_label)
+            if self.input_mode_video:
+                layout.label("Video Path (.mp4)")
+                _, self.input_path = layout.input_text("##videopath", self.input_path)
+            else:
+                layout.label("PLY Directory")
+                _, self.input_path = layout.path_input("##plydir", self.input_path, True)
             
             _, self.playback_fps = layout.drag_float("Playback FPS", self.playback_fps, 1.0, 1.0, 120.0)
 
@@ -150,8 +151,8 @@ class SharpVideoPanel:
             if layout.button(btn_label):
                 self._start_processing()
             
-            if self.stage == Stage.ERROR and self.job and self.job.result:
-                layout.label(f"Error: {self.job.result.error}")
+            if self.stage == Stage.ERROR and self.error_message:
+                layout.text_colored(f"Error: {self.error_message}", (1.0, 0.0, 0.0, 1.0))
 
         # Playback Controls
         if self.ply_files:
@@ -185,10 +186,34 @@ class SharpVideoPanel:
                 self.last_frame_time = now
 
     def _start_processing(self):
+        self.error_message = ""  # Clear previous errors
+        
+        if not self.input_path.strip():
+            self.error_message = "Please enter a path"
+            self.stage = Stage.ERROR
+            return
+        
         path = Path(self.input_path)
+        
+        if self.input_mode_video:
+            if not path.is_file():
+                self.error_message = "Video path must be an existing file"
+                self.stage = Stage.ERROR
+                return
+            if not self.input_path.lower().endswith('.mp4'):
+                self.error_message = "Please select a .mp4 video file"
+                self.stage = Stage.ERROR
+                return
+        else:
+            if not path.is_dir():
+                self.error_message = "PLY path must be an existing directory"
+                self.stage = Stage.ERROR
+                return
+        
         if not path.exists():
-             lf.log.error(f"Path not found: {self.input_path}")
-             return
+            self.error_message = f"Path does not exist: {self.input_path}"
+            self.stage = Stage.ERROR
+            return
 
         self.job = ProcessingJob(self.input_path, self.input_mode_video)
         self.stage = Stage.PROCESSING
@@ -208,6 +233,7 @@ class SharpVideoPanel:
             # Start background preloading
             threading.Thread(target=self._preload_frames, daemon=True).start()
         else:
+            self.error_message = result.error or "Processing failed"
             self.stage = Stage.ERROR
 
     def _preload_frames(self):

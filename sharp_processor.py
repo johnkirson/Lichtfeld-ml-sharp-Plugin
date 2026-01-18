@@ -68,6 +68,7 @@ class SharpProcessor:
                 
                 frame_path = temp_dir / f"frame_{i:05d}.jpg"
                 imageio.imsave(frame_path, frame)
+
             reader.close()
 
             # 2. Run SHARP Inference (In-Process)
@@ -107,6 +108,11 @@ class SharpProcessor:
                 save_ply(gaussians, f_px, (height, width), output_dir / f"{image_path.stem}.ply")
 
             self.logger.info("SHARP Inference complete.")
+            
+            # Cleanup model to free memory
+            del gaussian_predictor
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             
             # 3. Collect generated PLY files
             ply_files = sorted([str(p) for p in output_dir.glob("frame_*.ply")])

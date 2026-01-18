@@ -105,10 +105,12 @@ def render_gaussians(
     renderer = gsplat.GSplatRenderer(color_space=metadata.color_space)
     video_writer = io.VideoWriter(output_path)
 
+    gaussians_device = gaussians.to(device)
+
     for _, eye_position in enumerate(trajectory):
         camera_info = camera_model.compute(eye_position)
         rendering_output = renderer(
-            gaussians.to(device),
+            gaussians_device,
             extrinsics=camera_info.extrinsics[None].to(device),
             intrinsics=camera_info.intrinsics[None].to(device),
             image_width=camera_info.width,
@@ -118,3 +120,9 @@ def render_gaussians(
         depth = rendering_output.depth[0]
         video_writer.add_frame(color, depth)
     video_writer.close()
+
+    # Cleanup rendering resources
+    del gaussians_device
+    del renderer
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
