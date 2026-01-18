@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: 2025 LichtFeld Studio Authors
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[plugin]
+name = "sharp_4d"
+version = "0.1.0"
+description = "4D Gaussian Splatting from Video using SHARP"
+author = "LichtFeld"
+min_lichtfeld_version = "1.0.0"
+
+[dependencies]
+packages = [
+    "numpy",
+    "torch>=2.2",
+    "torchvision>=0.23.0",
+    "timm",
+    "gsplat",
+    "imageio",
+    "imageio-ffmpeg",
+    "pillow-heif",
+    "plyfile",
+    "scipy",
+    "tqdm",
+    "click",
+    "plyfile"
+]
+local_packages = [
+    "ml-sharp"
+]
+
+[lifecycle]
+auto_start = true
+hot_reload = true
