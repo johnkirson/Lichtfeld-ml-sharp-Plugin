@@ -1,5 +1,7 @@
 # SHARP 4D Video Plugin for LichtFeld Studio
 
+![Demo](milo.gif)
+
 A 4D Gaussian Splatting plugin for LichtFeld Studio, powered by [SHARP](https://github.com/apple/ml-sharp). This tool enables the conversion of standard video files into 4D Gaussian Splat sequences and provides a dedicated player for 4D visualization within the LichtFeld environment.
 
 ## Features
