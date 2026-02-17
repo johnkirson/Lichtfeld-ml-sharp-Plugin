@@ -28,22 +28,23 @@ dependencies = [
 ]
 
 [tool.lichtfeld]
-# Важно: имя должно совпадать с папкой или быть уникальным ID
+# Основные настройки
 display_name = "Sharp 4D Video"
 description = "Generate 4D Gaussian Splats from video input"
 version = "0.1.0"
 author = "LichtFeld Studio Authors"
-# Точка входа для новой системы плагинов. 
-# Так как в __init__.py есть функции on_load/on_unload, 
-# мы указываем корневой модуль.
 entry_point = "." 
 icon = "assets/icon.png"
 category = "Generators"
+
+# ВОТ ЭТОГО НЕ ХВАТАЛО (настройки жизненного цикла):
+auto_start = true
+hot_reload = true
 
 [tool.lichtfeld.permissions]
 allow_network = true
 allow_file_access = true
 
-# Секция для совместимости с локальными пакетами
+# Секция для включения локальной папки ml-sharp в путь
 [tool.hatch.build.targets.wheel.force-include]
 "ml-sharp" = "ml-sharp"
