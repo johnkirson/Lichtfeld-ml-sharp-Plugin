@@ -5,9 +5,29 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lichtfeld-ml-sharp-plugin"
 version = "0.1.0"
-description = "Apple SHARP 4DGS generator for Lichtfeld Studio"
+description = "Sharp 4D Video Plugin for LichtFeld Studio"
+authors = [
+    {name = "LichtFeld Studio Authors"}
+]
+license = {text = "GPL-3.0-or-later"}
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
     "torch",
     "numpy",
     "tqdm"
 ]
+
+[tool.lichtfeld]
+display_name = "Apple SHARP 4D Video"
+description = "Generate 4D Gaussian Splats from video input"
+version = "0.1.0"
+author = "LichtFeld Studio Authors"
+# ВАЖНО: Указываем модуль, так как функции on_load вызываются автоматически при импорте
+entry_point = "lichtfeld_ml_sharp_plugin" 
+icon = "assets/icon.png"
+category = "Generators"
+
+[tool.lichtfeld.permissions]
+allow_network = true
+allow_file_access = true
