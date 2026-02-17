@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lichtfeld-ml-sharp-plugin"
+version = "0.1.0"
+description = "Apple SHARP 4DGS generator for Lichtfeld Studio"
+dependencies = [
+    "torch",
+    "numpy",
+    "tqdm"
+]
