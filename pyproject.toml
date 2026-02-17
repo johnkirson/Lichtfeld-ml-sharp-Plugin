@@ -3,9 +3,9 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lichtfeld-ml-sharp-plugin"
+name = "sharp_4d"
 version = "0.1.0"
-description = "Sharp 4D Video Plugin for LichtFeld Studio"
+description = "4D Gaussian Splatting from Video using SHARP"
 authors = [
     {name = "LichtFeld Studio Authors"}
 ]
@@ -13,21 +13,37 @@ license = {text = "GPL-3.0-or-later"}
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "torch",
     "numpy",
-    "tqdm"
+    "torch>=2.2",
+    "torchvision>=0.23.0",
+    "timm",
+    "gsplat",
+    "imageio",
+    "imageio-ffmpeg",
+    "pillow-heif",
+    "plyfile",
+    "scipy",
+    "tqdm",
+    "click"
 ]
 
 [tool.lichtfeld]
-display_name = "Apple SHARP 4D Video"
+# Важно: имя должно совпадать с папкой или быть уникальным ID
+display_name = "Sharp 4D Video"
 description = "Generate 4D Gaussian Splats from video input"
 version = "0.1.0"
 author = "LichtFeld Studio Authors"
-# ВАЖНО: Указываем модуль, так как функции on_load вызываются автоматически при импорте
-entry_point = "lichtfeld_ml_sharp_plugin" 
+# Точка входа для новой системы плагинов. 
+# Так как в __init__.py есть функции on_load/on_unload, 
+# мы указываем корневой модуль.
+entry_point = "." 
 icon = "assets/icon.png"
 category = "Generators"
 
 [tool.lichtfeld.permissions]
 allow_network = true
 allow_file_access = true
+
+# Секция для совместимости с локальными пакетами
+[tool.hatch.build.targets.wheel.force-include]
+"ml-sharp" = "ml-sharp"
